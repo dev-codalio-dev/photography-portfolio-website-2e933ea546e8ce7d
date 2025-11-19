@@ -21,5 +21,9 @@ Rhino.setup do |config|
 
   # The list of resources exposed in the API
   config.resources += [ "User", "Account" ]
-  config.resources += ["Organization", "UsersRole", "Role", "UsersRoleInvite"]
+  config.resources += [ "Organization", "UsersRole", "Role", "UsersRoleInvite" ]
+  config.resources += [ "License" ]
+  config.resources += [ "Photo" ]
+  config.resources += [ "Order" ]
+  config.resources += [ "OrderItem" ]
 end

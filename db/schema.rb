@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_11_19_224858) do
+ActiveRecord::Schema[8.0].define(version: 2025_11_19_225003) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -85,10 +85,51 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_19_224858) do
     t.index ["sluggable_type"], name: "index_friendly_id_slugs_on_sluggable_type"
   end
 
+  create_table "licenses", force: :cascade do |t|
+    t.string "name", limit: 255, null: false
+    t.text "description"
+    t.bigint "organization_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name", "organization_id"], name: "index_licenses_on_name_and_organization_id", unique: true
+    t.index ["organization_id"], name: "index_licenses_on_organization_id"
+  end
+
+  create_table "order_items", force: :cascade do |t|
+    t.integer "quantity", null: false
+    t.float "price", null: false
+    t.bigint "order_id", null: false
+    t.bigint "photo_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["order_id"], name: "index_order_items_on_order_id"
+    t.index ["photo_id"], name: "index_order_items_on_photo_id"
+  end
+
+  create_table "orders", force: :cascade do |t|
+    t.float "total_amount", null: false
+    t.bigint "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_orders_on_user_id"
+  end
+
   create_table "organizations", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "photos", force: :cascade do |t|
+    t.string "title", limit: 255, null: false
+    t.text "description"
+    t.float "price", null: false
+    t.bigint "user_id", null: false
+    t.bigint "license_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["license_id"], name: "index_photos_on_license_id"
+    t.index ["user_id"], name: "index_photos_on_user_id"
   end
 
   create_table "roles", force: :cascade do |t|
@@ -301,6 +342,12 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_19_224858) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "licenses", "organizations"
+  add_foreign_key "order_items", "orders"
+  add_foreign_key "order_items", "photos"
+  add_foreign_key "orders", "users"
+  add_foreign_key "photos", "licenses"
+  add_foreign_key "photos", "users"
   add_foreign_key "solid_queue_blocked_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_claimed_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_failed_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
